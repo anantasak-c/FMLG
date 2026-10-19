@@ -1,0 +1,27 @@
+{
+  "name": "thai-ai-video-platform",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "test": "node --test",
+    "typecheck": "tsc --noEmit",
+    "config:check": "node scripts/check-live-config.mjs",
+    "supabase:verify-rls": "node scripts/verify-supabase-pilot-rls.mjs"
+  },
+  "dependencies": {
+    "next": "latest",
+    "react": "latest",
+    "react-dom": "latest",
+    "react-markdown": "^10.1.0",
+    "remark-gfm": "^4.0.1"
+  },
+  "devDependencies": {
+    "@types/node": "latest",
+    "@types/react": "latest",
+    "@types/react-dom": "latest",
+    "typescript": "latest"
+  }
+}

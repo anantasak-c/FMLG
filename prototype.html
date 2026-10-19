@@ -1,0 +1,1254 @@
+<!DOCTYPE html>
+<html lang="th" class="h-full light" id="html-root">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Thai AI Video Platform — Clean Light SaaS (Spotify Design System)</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            spotify: {
+              green: '#1ed760',
+              'green-dark': '#1db954',
+              'on-green': '#000000',
+              // Light mode tokens (Default)
+              light: {
+                base: '#f6f8fa',
+                card: '#ffffff',
+                mid: '#f0f2f5',
+                hover: '#e9ecef',
+                border: '#e1e4e8',
+                'border-light': '#d0d7de',
+                text: '#121212',
+                subtext: '#57606a'
+              },
+              // Dark mode tokens
+              dark: {
+                base: '#121212',
+                card: '#181818',
+                mid: '#1f1f1f',
+                hover: '#252525',
+                border: '#282828',
+                'border-light': '#3e3e3e',
+                text: '#ffffff',
+                subtext: '#b3b3b3'
+              },
+              warning: '#e36209',
+              negative: '#cf222e',
+            }
+          },
+          borderRadius: {
+            'minimal': '4px',
+            'pill': '500px',
+            'full-pill': '9999px',
+          },
+          boxShadow: {
+            'spotify-card': '0 1px 3px rgba(0,0,0,0.05), 0 1px 2px rgba(0,0,0,0.04)',
+            'spotify-card-hover': '0 4px 12px rgba(0,0,0,0.08)',
+            'spotify-dialog': '0 20px 40px rgba(0,0,0,0.15)',
+          }
+        }
+      }
+    }
+  </script>
+  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; }
+    body, html {
+      font-family: 'Prompt', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      background-color: #f6f8fa;
+      color: #121212;
+      transition: background-color 0.2s ease, color 0.2s ease;
+    }
+    code, pre, .mono { font-family: 'JetBrains Mono', monospace; }
+    
+    /* Input Styling for Light (Default) & Dark */
+    .light .spotify-input {
+      background-color: #f0f2f5;
+      color: #121212;
+      border: 1px solid #d0d7de;
+      box-shadow: inset 0 1px 2px rgba(0,0,0,0.03);
+      transition: border-color 0.2s, background-color 0.2s;
+    }
+    .light .spotify-input:focus {
+      background-color: #ffffff;
+      border-color: #1db954;
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(29, 185, 84, 0.15);
+    }
+
+    .dark .spotify-input {
+      background-color: #1f1f1f;
+      color: #ffffff;
+      border: 1px solid #2e2e2e;
+      box-shadow: inset 0 1px 2px rgba(0,0,0,0.4);
+    }
+    .dark .spotify-input:focus {
+      background-color: #262626;
+      border-color: #1ed760;
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(30, 215, 96, 0.2);
+    }
+
+    /* Spotify Systematic Label Voice */
+    .spotify-btn-label {
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 1.4px;
+      text-transform: uppercase;
+      line-height: 1;
+    }
+
+    /* Custom select dropdown arrows */
+    select.spotify-input {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%2357606a' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3E%3C/svg%3E");
+      background-position: right 0.5rem center;
+      background-repeat: no-repeat;
+      background-size: 1.25em 1.25em;
+      padding-right: 2rem;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      appearance: none;
+    }
+    .dark select.spotify-input {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%23b3b3b3' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3E%3C/svg%3E");
+    }
+
+    /* Scrollbars */
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    .light ::-webkit-scrollbar-track { background: #f6f8fa; }
+    .light ::-webkit-scrollbar-thumb { background: #d0d7de; border-radius: 4px; }
+    .light ::-webkit-scrollbar-thumb:hover { background: #afb8c1; }
+
+    .dark ::-webkit-scrollbar-track { background: #121212; }
+    .dark ::-webkit-scrollbar-thumb { background: #282828; border-radius: 4px; }
+    .dark ::-webkit-scrollbar-thumb:hover { background: #3e3e3e; }
+  </style>
+</head>
+<body class="h-full flex flex-col antialiased selection:bg-[#1ed760] selection:text-black overflow-hidden bg-[#f6f8fa] text-[#121212] dark:bg-[#121212] dark:text-[#ffffff]">
+
+  <!-- Hidden global audio/video element for continuous playback across all tabs -->
+  <video id="global-player-media" class="hidden" playsinline></video>
+
+  <!-- ==================== MAIN APPLICATION LAYOUT ==================== -->
+  <div class="flex-1 flex overflow-hidden">
+    
+    <!-- LEFT SIDEBAR (Clean White by default) -->
+    <aside class="w-64 bg-[#ffffff] dark:bg-[#121212] flex flex-col border-r border-[#e1e4e8] dark:border-[#242424] p-4 select-none shrink-0 hidden md:flex transition-colors">
+      <!-- Logo -->
+      <div class="flex items-center space-x-3 px-3 py-3 cursor-pointer" onclick="switchPage('studio')">
+        <div class="w-8 h-8 rounded-full bg-[#1ed760] text-black flex items-center justify-center font-bold text-lg shadow-md shadow-[#1ed760]/30 shrink-0">
+          <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.58 14.42c-.18.3-.56.4-.86.22-2.36-1.44-5.33-1.77-8.83-.97-.34.08-.68-.13-.76-.47-.08-.34.13-.68.47-.76 3.83-.88 7.13-.5 9.76 1.12.3.18.4.56.22.86zm1.22-2.72c-.23.38-.72.5-1.1.27-2.7-1.66-6.82-2.14-10.02-1.17-.42.13-.86-.11-.99-.53-.13-.42.11-.86.53-.99 3.66-1.11 8.21-.57 11.31 1.33.38.23.5.72.27 1.1zm.11-2.83C14.67 8.9 9.34 8.72 6.26 9.66c-.5.15-1.04-.13-1.19-.63-.15-.5.13-1.04.63-1.19 3.56-1.08 9.47-.87 13.23 1.36.45.27.6.86.33 1.31-.27.46-.86.6-1.35.33z"/>
+          </svg>
+        </div>
+        <div class="flex flex-col">
+          <span class="text-sm font-bold tracking-wider text-[#121212] dark:text-white">AI VIDEO STUDIO</span>
+          <span class="text-[10px] text-[#57606a] dark:text-[#b3b3b3] font-semibold uppercase tracking-widest">THAI PLATFORM</span>
+        </div>
+      </div>
+
+      <!-- Navigation Links -->
+      <nav class="mt-4 space-y-1 text-sm" id="sidebar-nav">
+        <!-- Rendered by JS -->
+      </nav>
+
+      <hr class="my-4 border-[#e1e4e8] dark:border-[#242424]">
+
+      <!-- Workspace Presets -->
+      <div class="flex-1 overflow-y-auto space-y-2 text-xs">
+        <div class="px-3 text-[11px] font-bold text-[#57606a] dark:text-[#b3b3b3] uppercase tracking-wider">Your Workspace</div>
+        <div class="space-y-1">
+          <div onclick="selectPresetPrompt(0)" class="px-3 py-2 rounded-md text-[#57606a] dark:text-[#b3b3b3] hover:text-[#121212] dark:hover:text-white hover:bg-[#f0f2f5] dark:hover:bg-[#181818] cursor-pointer transition truncate">
+            🍜 Thai Seafood Commercial 4K
+          </div>
+          <div onclick="selectPresetPrompt(1)" class="px-3 py-2 rounded-md text-[#57606a] dark:text-[#b3b3b3] hover:text-[#121212] dark:hover:text-white hover:bg-[#f0f2f5] dark:hover:bg-[#181818] cursor-pointer transition truncate">
+            🏙️ Bangkok Cyberpunk Night
+          </div>
+          <div onclick="selectPresetPrompt(2)" class="px-3 py-2 rounded-md text-[#57606a] dark:text-[#b3b3b3] hover:text-[#121212] dark:hover:text-white hover:bg-[#f0f2f5] dark:hover:bg-[#181818] cursor-pointer transition truncate">
+            ☕ Specialty Coffee Macro Slow-Mo
+          </div>
+        </div>
+      </div>
+
+      <!-- Coin Wallet Box in Sidebar -->
+      <div class="mt-auto bg-[#f8f9fa] dark:bg-[#181818] p-3.5 rounded-lg border border-[#e1e4e8] dark:border-[#242424] space-y-2.5 shadow-sm">
+        <div class="flex justify-between items-center text-xs">
+          <span class="text-[#57606a] dark:text-[#b3b3b3] font-medium">Coin Wallet</span>
+          <span class="text-[#1db954] dark:text-[#1ed760] font-bold font-mono">🪙 <span id="sidebar-coin-balance">745</span></span>
+        </div>
+        <button onclick="openTopupModal()" class="w-full bg-white dark:bg-[#1f1f1f] text-[#121212] dark:text-white border border-[#d0d7de] dark:border-[#3e3e3e] hover:border-[#1db954] py-2 rounded-full-pill text-xs font-bold transition flex items-center justify-center gap-1 shadow-sm">
+          <span>+ เติม Coin (PromptPay)</span>
+        </button>
+      </div>
+    </aside>
+
+    <!-- RIGHT CONTENT AREA -->
+    <div class="flex-1 flex flex-col overflow-y-auto bg-[#f6f8fa] dark:bg-[#121212] pb-24 transition-colors">
+      
+      <!-- Top Header Bar (Clean White) -->
+      <header class="bg-white/95 dark:bg-[#121212]/95 backdrop-blur-md px-6 py-3.5 flex items-center justify-between sticky top-0 z-30 border-b border-[#e1e4e8] dark:border-[#242424] transition-colors shadow-sm">
+        <!-- Search Pill -->
+        <div class="flex items-center space-x-3 flex-1 max-w-md">
+          <div class="w-full relative">
+            <input type="text" placeholder="ค้นหา Prompt, สไตล์คลิป, หรือบทเรียน AI Video..." class="w-full spotify-input rounded-pill py-2 pl-9 pr-4 text-xs placeholder-[#57606a] dark:placeholder-[#b3b3b3]">
+            <span class="absolute left-3 top-2.5 text-[#57606a] dark:text-[#b3b3b3] text-xs">🔍</span>
+          </div>
+        </div>
+
+        <!-- Top Right Actions -->
+        <div class="flex items-center space-x-3">
+          <!-- Dark/Light Mode Switcher -->
+          <button onclick="toggleTheme()" id="theme-toggle-btn" class="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full-pill text-xs font-bold bg-[#f0f2f5] dark:bg-[#1f1f1f] text-[#121212] dark:text-white border border-[#d0d7de] dark:border-[#3e3e3e] hover:border-[#1db954] transition shadow-sm" title="สลับโหมดสว่าง / มืด">
+            <span id="theme-icon">🌙</span>
+            <span id="theme-label" class="text-[11px]">Dark Mode</span>
+          </button>
+
+          <!-- Topup CTA Button -->
+          <button onclick="openTopupModal()" class="bg-[#1ed760] hover:scale-105 active:scale-95 text-black font-bold px-4 py-2 rounded-full-pill text-xs spotify-btn-label transition shadow-md shadow-[#1ed760]/20">
+            เติม Coin
+          </button>
+          
+          <!-- User Profile -->
+          <div class="w-8 h-8 rounded-full bg-[#f0f2f5] dark:bg-[#1f1f1f] border border-[#d0d7de] dark:border-[#3e3e3e] text-[#121212] dark:text-white flex items-center justify-center font-bold text-xs cursor-pointer hover:border-[#1db954] transition shadow-sm" title="User Profile: Anantasak">
+            A
+          </div>
+        </div>
+      </header>
+
+      <!-- Main Viewport Root -->
+      <main id="app-root" class="flex-1 p-6">
+        <!-- Rendered by JS -->
+      </main>
+
+    </div>
+
+  </div>
+
+  <!-- ==================== PERSISTENT BOTTOM NOW-PLAYING / GENERATING BAR ==================== -->
+  <footer id="persistent-footer" class="fixed bottom-0 inset-x-0 bg-white dark:bg-[#121212] border-t border-[#e1e4e8] dark:border-[#242424] px-6 py-3 flex items-center justify-between z-40 select-none shadow-2xl transition-colors">
+    <!-- Populated dynamically by renderFooter() -->
+  </footer>
+
+  <!-- ==================== PROMPTPAY SLIP VERIFICATION MODAL ==================== -->
+  <div id="topup-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white dark:bg-[#181818] border border-[#e1e4e8] dark:border-[#282828] rounded-xl max-w-lg w-full p-6 shadow-spotify-dialog relative animate-in fade-in zoom-in-95 duration-200">
+      <button onclick="closeTopupModal()" class="absolute top-4 right-4 text-[#57606a] dark:text-[#b3b3b3] hover:text-black dark:hover:text-white text-base">✕</button>
+      
+      <div class="flex items-center space-x-3 mb-5">
+        <div class="w-10 h-10 rounded-full bg-[#1ed760]/20 text-[#1db954] dark:text-[#1ed760] flex items-center justify-center text-xl font-bold">🪙</div>
+        <div>
+          <h3 class="text-base font-bold text-[#121212] dark:text-white">เติม Coin ด้วย PromptPay</h3>
+          <p class="text-xs text-[#57606a] dark:text-[#b3b3b3]">ตรวจสอบสลิปอัตโนมัติผ่าน SlipOK API รวดเร็วใน 5 วินาที</p>
+        </div>
+      </div>
+
+      <!-- Step 1: Select Package -->
+      <div id="topup-step-1" class="space-y-4">
+        <label class="text-xs text-[#121212] dark:text-white font-bold block">เลือกแพ็กเกจ Coin</label>
+        <div class="grid grid-cols-2 gap-3">
+          <button onclick="selectPackage(100, 99)" class="pkg-card border border-[#e1e4e8] dark:border-[#3e3e3e] hover:border-[#1db954] bg-[#f8f9fa] dark:bg-[#1f1f1f] p-4 rounded-lg text-left transition shadow-sm">
+            <div class="text-sm font-bold text-[#1db954] dark:text-[#1ed760]">🪙 100 Coins</div>
+            <div class="text-xs text-[#121212] dark:text-white font-semibold mt-1">฿99 บาท</div>
+            <div class="text-[10px] text-[#57606a] dark:text-[#b3b3b3] mt-0.5">~1-2 คลิป Kling 4K</div>
+          </button>
+          <button onclick="selectPackage(550, 499)" class="pkg-card border-2 border-[#1db954] dark:border-[#1ed760] bg-emerald-50/40 dark:bg-[#242424] p-4 rounded-lg text-left transition relative shadow-sm">
+            <span class="absolute -top-2.5 right-3 bg-[#1ed760] text-black text-[9px] px-2 py-0.5 rounded-full-pill font-bold uppercase shadow-sm">Popular</span>
+            <div class="text-sm font-bold text-[#1db954] dark:text-[#1ed760]">🪙 550 Coins</div>
+            <div class="text-xs text-[#121212] dark:text-white font-semibold mt-1">฿499 บาท</div>
+            <div class="text-[10px] text-[#1db954] dark:text-[#1ed760] mt-0.5 font-bold">+50 Bonus Coins ฟรี</div>
+          </button>
+          <button onclick="selectPackage(1200, 999)" class="pkg-card border border-[#e1e4e8] dark:border-[#3e3e3e] hover:border-[#1db954] bg-[#f8f9fa] dark:bg-[#1f1f1f] p-4 rounded-lg text-left transition shadow-sm">
+            <div class="text-sm font-bold text-[#1db954] dark:text-[#1ed760]">🪙 1,200 Coins</div>
+            <div class="text-xs text-[#121212] dark:text-white font-semibold mt-1">฿999 บาท</div>
+            <div class="text-[10px] text-[#1db954] dark:text-[#1ed760] mt-0.5 font-bold">+200 Bonus Coins</div>
+          </button>
+          <button onclick="selectPackage(2700, 1999)" class="pkg-card border border-[#e1e4e8] dark:border-[#3e3e3e] hover:border-[#1db954] bg-[#f8f9fa] dark:bg-[#1f1f1f] p-4 rounded-lg text-left transition shadow-sm">
+            <div class="text-sm font-bold text-[#1db954] dark:text-[#1ed760]">🪙 2,700 Coins</div>
+            <div class="text-xs text-[#121212] dark:text-white font-semibold mt-1">฿1,999 บาท</div>
+            <div class="text-[10px] text-[#1db954] dark:text-[#1ed760] mt-0.5 font-bold">+700 Bonus Coins</div>
+          </button>
+        </div>
+
+        <div class="bg-[#f8f9fa] dark:bg-[#121212] p-3.5 rounded-lg border border-[#e1e4e8] dark:border-[#242424] text-xs flex justify-between items-center">
+          <span class="text-[#57606a] dark:text-[#b3b3b3]">ยอดชำระสุทธิ:</span>
+          <span class="text-base font-bold text-[#121212] dark:text-white" id="selected-price">฿499 บาท</span>
+        </div>
+
+        <button onclick="proceedToPayment()" class="w-full bg-[#1ed760] hover:scale-[1.02] text-black font-bold py-3 rounded-pill text-xs spotify-btn-label transition shadow-md shadow-[#1ed760]/20">
+          ต่อไป: สแกน QR PROMPTPAY
+        </button>
+      </div>
+
+      <!-- Step 2: QR & Slip Verification -->
+      <div id="topup-step-2" class="space-y-4 hidden">
+        <div class="flex flex-col sm:flex-row gap-4 items-center bg-[#f8f9fa] dark:bg-[#121212] p-4 rounded-lg border border-[#e1e4e8] dark:border-[#242424]">
+          <div class="bg-white p-3 rounded-md text-center text-slate-950 shrink-0 shadow-sm border border-slate-200">
+            <div class="text-[9px] font-bold text-black uppercase mb-1">PROMPTPAY QR</div>
+            <svg class="w-24 h-24 mx-auto" viewBox="0 0 100 100">
+              <rect width="100" height="100" fill="white"/>
+              <path d="M10 10h30v30h-30z M15 15h20v20h-20z M60 10h30v30h-30z M65 15h20v20h-20z M10 60h30v30h-30z M15 65h20v20h-20z M45 10h10v10h-10z M45 30h10v20h-10z M10 45h20v10h-20z M60 45h10v10h-10z M80 45h10v10h-10z M45 60h20v10h-20z M70 60h20v20h-20z M45 80h10v10h-10z M60 80h30v10h-30z" fill="#000000"/>
+            </svg>
+            <div class="text-[10px] font-bold text-black mt-1" id="qr-amount-text">฿499.00</div>
+          </div>
+          <div class="text-xs space-y-1.5">
+            <div class="font-bold text-[#121212] dark:text-white">ขั้นตอนยืนยันสลิป:</div>
+            <p class="text-[#57606a] dark:text-[#b3b3b3] text-[11px] leading-relaxed">สแกนจ่ายผ่านแอปธนาคาร จากนั้นทดลองอัปโหลดสลิปด้านล่าง ระบบจะบันทึก Transaction Ref ลง Database และเติม Coin ทันที</p>
+          </div>
+        </div>
+
+        <div class="bg-[#f8f9fa] dark:bg-[#121212] border border-dashed border-[#d0d7de] dark:border-[#3e3e3e] rounded-lg p-4 text-center">
+          <div class="text-xs text-[#121212] dark:text-white font-bold mb-2.5">จำลองการตรวจสอบสลิป SlipOK:</div>
+          <div class="flex gap-2 justify-center">
+            <button onclick="simulateSlipVerification('valid')" class="bg-[#1ed760] hover:scale-105 text-black text-xs font-bold px-4 py-2 rounded-full-pill transition shadow-sm">
+              ✓ ส่งสลิปถูกต้อง (+Coins)
+            </button>
+            <button onclick="simulateSlipVerification('duplicate')" class="bg-white dark:bg-[#1f1f1f] hover:bg-rose-50 text-[#cf222e] dark:text-[#f3727f] border border-[#cf222e]/40 text-xs font-bold px-3 py-2 rounded-full-pill transition shadow-sm">
+              ⚠️ ลองส่งสลิปซ้ำ (Anti-Fraud)
+            </button>
+          </div>
+        </div>
+
+        <button onclick="backToStep1()" class="text-xs text-[#57606a] dark:text-[#b3b3b3] hover:text-black dark:hover:text-white block mx-auto font-medium">
+          ← ย้อนกลับไปเลือกแพ็กเกจ
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Notification Toast Container -->
+  <div id="toast-container" class="fixed top-16 right-6 z-50 flex flex-col space-y-2 pointer-events-none"></div>
+
+  <!-- ==================== JAVASCRIPT STATE & APPLICATION ENGINE ==================== -->
+  <script>
+    const state = {
+      theme: 'light', // 'light' (Default) | 'dark'
+      currentPage: 'studio', // 'studio' | 'coach' | 'learn' | 'videos'
+      activeVideoIndex: 0,
+      isPlaying: false,
+      user: {
+        id: 'usr_101',
+        name: 'Anantasak',
+        email: 'anantasak@thai-aivideo.com',
+        coinBalance: 745,
+      },
+      selectedPackage: { coins: 550, price: 499 },
+      studio: {
+        prompt: 'A cinematic Thai luxury seafood commercial, fresh tiger prawns glistening on crushed ice, macro slow motion camera orbit, 4k ultra-detailed, warm golden ambient lighting, professional food photography.',
+        negativePrompt: 'blurry, low quality, distorted, extra limbs, watermark, cartoon, noise',
+        model: 'Kling 1.5 (Realistic)',
+        aspectRatio: '16:9',
+        duration: '5s',
+        cameraMovement: 'Orbit 360° (หมุนรอบ)',
+        qualityTier: 'Realistic',
+        cost: 75,
+      },
+      isGenerating: false,
+      generationProgress: 0,
+      generations: [
+        {
+          id: 'gen_001',
+          title: 'Thai Seafood TVC - Hero Shot',
+          model: 'Kling 1.5 Realistic',
+          aspect: '16:9',
+          cost: 75,
+          createdAt: new Date(Date.now() - 2 * 86400000).toISOString(),
+          expiresInDays: 28,
+          videoUrl: 'https://assets.mixkit.co/videos/preview/mixkit-fresh-seafood-dish-in-a-restaurant-41481-large.mp4'
+        },
+        {
+          id: 'gen_002',
+          title: 'Bangkok Chinatown Neon Night Scene',
+          model: 'FLUX + WAN 2.1 Pro',
+          aspect: '9:16',
+          cost: 110,
+          createdAt: new Date(Date.now() - 5 * 86400000).toISOString(),
+          expiresInDays: 25,
+          videoUrl: 'https://assets.mixkit.co/videos/preview/mixkit-traffic-in-a-street-at-night-42289-large.mp4'
+        }
+      ],
+      coachMessages: [
+        { sender: 'coach', text: 'สวัสดีครับ! ผมคือ AI Coach ผู้ช่วยคิดและกำกับ Prompt สำหรับ AI Video สไตล์ภาพยนตร์ วันนี้ต้องการสร้างสรรค์ผลงานแนวไหนครับ?' }
+      ],
+      currentGeneratedPrompt: null,
+      courses: [
+        {
+          id: 'crs_01',
+          title: 'AI Video Beginner: จาก 0 สู่คลิปไวรัลแรก',
+          priceTHB: 990,
+          bonusCoins: 300,
+          lessonsCount: 12,
+          duration: '3.5 ชม.',
+          purchased: true,
+          progressPercent: 65,
+          thumbnail: '🎬'
+        },
+        {
+          id: 'crs_02',
+          title: 'AI Video Mastery & Character Consistency Pro',
+          priceTHB: 1990,
+          bonusCoins: 700,
+          lessonsCount: 24,
+          duration: '8 ชม.',
+          purchased: false,
+          progressPercent: 0,
+          thumbnail: '💎'
+        }
+      ],
+      transactions: [
+        { id: 'tx_01', type: 'TOPUP', amount: 550, detail: 'PromptPay SlipOK #THB-499', date: '2026-08-18' },
+        { id: 'tx_02', type: 'SPEND', amount: -5, detail: 'AI Coach: Final Prompt Export', date: '2026-08-18' },
+        { id: 'tx_03', type: 'SPEND', amount: -75, detail: 'Video Studio: Kling Generation', date: '2026-08-18' },
+      ],
+      usedSlipRefs: new Set(['SLIP_99881122'])
+    };
+
+    // Theme Switcher
+    function toggleTheme() {
+      state.theme = state.theme === 'light' ? 'dark' : 'light';
+      const root = document.getElementById('html-root');
+      if (state.theme === 'dark') {
+        root.classList.remove('light');
+        root.classList.add('dark');
+        document.getElementById('theme-icon').textContent = '☀️';
+        document.getElementById('theme-label').textContent = 'Light Mode';
+        document.body.className = 'h-full flex flex-col antialiased selection:bg-[#1ed760] selection:text-black overflow-hidden bg-[#121212] text-[#ffffff]';
+      } else {
+        root.classList.remove('dark');
+        root.classList.add('light');
+        document.getElementById('theme-icon').textContent = '🌙';
+        document.getElementById('theme-label').textContent = 'Dark Mode';
+        document.body.className = 'h-full flex flex-col antialiased selection:bg-[#1ed760] selection:text-black overflow-hidden bg-[#f6f8fa] text-[#121212]';
+      }
+      showToast(`🎨 สลับเป็น ${state.theme === 'light' ? 'Light Mode (ธีมสว่างสะอาดตา)' : 'Dark Mode (Spotify Classic)'}`, 'info');
+      render();
+    }
+
+    function showToast(msg, type = 'info') {
+      const toast = document.createElement('div');
+      const bg = type === 'success' ? 'bg-[#1ed760] text-black font-bold' : type === 'error' ? 'bg-[#cf222e] text-white font-bold' : state.theme === 'dark' ? 'bg-[#282828] text-white border border-[#3e3e3e]' : 'bg-white text-[#121212] border border-[#d0d7de] shadow-lg';
+      toast.className = `${bg} px-4 py-3 rounded-full-pill text-xs transition duration-300 opacity-0 translate-y-2 pointer-events-auto flex items-center gap-2 shadow-xl`;
+      toast.innerHTML = msg;
+      const container = document.getElementById('toast-container');
+      container.appendChild(toast);
+      setTimeout(() => { toast.classList.remove('opacity-0', 'translate-y-2'); }, 10);
+      setTimeout(() => {
+        toast.classList.add('opacity-0', '-translate-y-2');
+        setTimeout(() => toast.remove(), 300);
+      }, 3500);
+    }
+
+    function switchPage(page) {
+      state.currentPage = page;
+      render();
+    }
+
+    function render() {
+      document.getElementById('sidebar-coin-balance').textContent = state.user.coinBalance;
+      renderSidebarNav();
+      renderFooter();
+      
+      const root = document.getElementById('app-root');
+      if (state.currentPage === 'studio') {
+        root.innerHTML = renderStudio();
+      } else if (state.currentPage === 'coach') {
+        root.innerHTML = renderCoach();
+      } else if (state.currentPage === 'learn') {
+        root.innerHTML = renderLearn();
+      } else {
+        root.innerHTML = renderVideos();
+      }
+    }
+
+    function renderSidebarNav() {
+      const nav = document.getElementById('sidebar-nav');
+      const isDark = state.theme === 'dark';
+      
+      const getNavItem = (id, icon, label) => {
+        const isActive = state.currentPage === id;
+        let itemClass = '';
+        if (isDark) {
+          itemClass = isActive 
+            ? 'text-white font-bold bg-[#181818] border-l-4 border-[#1ed760]' 
+            : 'text-[#b3b3b3] font-normal hover:text-white hover:bg-[#181818]';
+        } else {
+          itemClass = isActive 
+            ? 'text-[#121212] font-bold bg-[#f0f2f5] border-l-4 border-[#1db954] shadow-sm' 
+            : 'text-[#57606a] font-normal hover:text-[#121212] hover:bg-[#f6f8fa]';
+        }
+        return `
+          <button onclick="switchPage('${id}')" class="w-full flex items-center gap-3.5 px-3.5 py-2.5 rounded-lg transition ${itemClass}">
+            <span class="text-base">${icon}</span>
+            <span>${label}</span>
+          </button>
+        `;
+      };
+
+      nav.innerHTML = `
+        ${getNavItem('studio', '🎬', 'Video Studio')}
+        ${getNavItem('coach', '✨', 'AI Coach')}
+        ${getNavItem('learn', '🎓', 'Academy (Learn)')}
+        ${getNavItem('videos', '📁', 'My Video Library')}
+      `;
+    }
+
+    function renderFooter() {
+      const footer = document.getElementById('persistent-footer');
+      const activeVideo = state.generations[state.activeVideoIndex] || state.generations[0];
+      
+      footer.innerHTML = `
+        <!-- Left: Video Metadata -->
+        <div class="flex items-center space-x-3.5 w-1/4 min-w-[200px]">
+          <div class="w-14 h-14 rounded-lg bg-black overflow-hidden relative shrink-0 border border-[#e1e4e8] dark:border-[#242424] shadow-sm">
+            <video id="footer-video-thumb" src="${activeVideo.videoUrl}" class="w-full h-full object-cover" muted></video>
+            <span class="absolute top-1 right-1 w-2 h-2 rounded-full ${state.isGenerating ? 'bg-[#1ed760] animate-ping' : 'bg-[#1ed760]'}"></span>
+          </div>
+          <div class="truncate">
+            <div class="text-sm font-bold text-[#121212] dark:text-white truncate" id="footer-video-title">${activeVideo.title}</div>
+            <div class="text-xs text-[#57606a] dark:text-[#b3b3b3] truncate mt-0.5" id="footer-video-meta">${activeVideo.model} • ${activeVideo.aspect} 4K</div>
+          </div>
+        </div>
+
+        <!-- Center: Play Controls & Scrubber -->
+        <div class="flex flex-col items-center max-w-md w-2/4 px-4 space-y-1.5">
+          <div class="flex items-center space-x-4">
+            <button onclick="rewindPreview()" class="text-[#57606a] dark:text-[#b3b3b3] hover:text-[#1db954] text-base transition">⏮</button>
+            <button onclick="toggleFooterPlay()" id="footer-play-btn" class="w-9 h-9 rounded-full bg-[#121212] dark:bg-white hover:scale-105 active:scale-95 text-white dark:text-black flex items-center justify-center text-sm font-bold transition shadow-md">
+              ${state.isPlaying ? '⏸' : '▶'}
+            </button>
+            <button onclick="forwardPreview()" class="text-[#57606a] dark:text-[#b3b3b3] hover:text-[#1db954] text-base transition">⏭</button>
+          </div>
+
+          <!-- Dynamic Scrubber Bar -->
+          <div class="w-full flex items-center space-x-2 text-[10px] text-[#57606a] dark:text-[#b3b3b3] font-mono">
+            <span id="video-time-cur">0:00</span>
+            <div class="flex-1 bg-[#e1e4e8] dark:bg-[#2e2e2e] h-1.5 rounded-full overflow-hidden relative cursor-pointer group" onclick="seekPreview(event)">
+              <div id="video-scrubber-progress" class="bg-[#121212] dark:bg-white group-hover:bg-[#1db954] h-full w-0 transition-all"></div>
+            </div>
+            <span id="video-time-total">0:05</span>
+          </div>
+        </div>
+
+        <!-- Right: Actions & Expiry Counter -->
+        <div class="flex items-center justify-end space-x-3 w-1/4 text-xs">
+          <span class="text-[11px] text-[#e36209] dark:text-[#ffa42b] bg-amber-50 dark:bg-[#ffa42b]/10 border border-amber-200 dark:border-[#ffa42b]/20 px-2.5 py-0.5 rounded-minimal font-semibold">
+            ⏳ ลบใน ${activeVideo.expiresInDays} วัน
+          </span>
+          <a id="footer-download-link" href="${activeVideo.videoUrl}" download class="bg-[#f0f2f5] dark:bg-[#1f1f1f] hover:bg-[#e9ecef] dark:hover:bg-[#282828] text-[#121212] dark:text-white p-2 rounded-full border border-[#d0d7de] dark:border-[#3e3e3e] transition shadow-sm" title="ดาวน์โหลด MP4">
+            ⬇️
+          </a>
+        </div>
+      `;
+    }
+
+    // ==========================================
+    // 1. VIDEO STUDIO VIEW (Clean SaaS Light Cards)
+    // ==========================================
+    function renderStudio() {
+      return `
+        <div class="max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-12 gap-6">
+          
+          <!-- LEFT: Parameter Workspace (7 Cols) -->
+          <div class="lg:col-span-7 space-y-5">
+            
+            <div class="bg-white dark:bg-[#181818] rounded-xl p-6 border border-[#e1e4e8] dark:border-[#242424] shadow-sm space-y-4 transition-colors">
+              <div class="flex justify-between items-center pb-3 border-b border-[#e1e4e8] dark:border-[#242424]">
+                <div class="flex items-center gap-2">
+                  <h1 class="text-lg font-bold text-[#121212] dark:text-white">Video Studio Workspace</h1>
+                  <span class="text-[10px] bg-emerald-50 dark:bg-[#1ed760]/10 text-[#1db954] dark:text-[#1ed760] border border-emerald-200 dark:border-[#1ed760]/30 px-2.5 py-0.5 rounded-full-pill font-bold uppercase">Direct Provider</span>
+                </div>
+                <button onclick="switchPage('coach')" class="text-xs text-[#1db954] dark:text-[#1ed760] font-bold hover:underline flex items-center gap-1">
+                  <span>✨ ให้ AI Coach ช่วยปรับ Prompt →</span>
+                </button>
+              </div>
+
+              <!-- Prompt Input with real-time sync -->
+              <div>
+                <label class="text-xs text-[#121212] dark:text-slate-800 font-bold block mb-2">PROMPT (English Production Prompt)</label>
+                <textarea id="studio-prompt-input" rows="4" 
+                  oninput="state.studio.prompt = this.value"
+                  class="w-full spotify-input rounded-lg p-3.5 text-xs text-[#121212] dark:text-white placeholder-[#57606a] dark:placeholder-[#b3b3b3] font-mono leading-relaxed">${state.studio.prompt}</textarea>
+              </div>
+
+              <!-- Negative Prompt -->
+              <div>
+                <label class="text-[11px] text-[#57606a] dark:text-[#b3b3b3] block mb-1 font-medium">Negative Prompt (สิ่งที่ไม่ต้องการให้ปรากฏ)</label>
+                <input type="text" value="${state.studio.negativePrompt}" oninput="state.studio.negativePrompt = this.value" class="w-full spotify-input rounded-lg px-3 py-2 text-xs font-mono">
+              </div>
+
+              <!-- Parameters -->
+              <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2">
+                <div>
+                  <label class="text-[11px] text-[#57606a] dark:text-[#b3b3b3] block mb-1 font-medium">Model Provider</label>
+                  <select onchange="updateStudioModel(this.value)" class="w-full spotify-input rounded-lg p-2 text-xs">
+                    <option value="Kling 1.5 (Realistic)" ${state.studio.model.includes('Kling') ? 'selected' : ''}>Kling 1.5 (สมจริง)</option>
+                    <option value="FLUX + WAN 2.1" ${state.studio.model.includes('FLUX') ? 'selected' : ''}>FLUX + WAN 2.1 Pro</option>
+                    <option value="Minimax Hailuo" ${state.studio.model.includes('Minimax') ? 'selected' : ''}>Minimax Hailuo</option>
+                    <option value="Luma Dream Machine" ${state.studio.model.includes('Luma') ? 'selected' : ''}>Luma Dream Machine</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label class="text-[11px] text-[#57606a] dark:text-[#b3b3b3] block mb-1 font-medium">Aspect Ratio</label>
+                  <select onchange="updateStudioAspect(this.value)" class="w-full spotify-input rounded-lg p-2 text-xs">
+                    <option value="16:9" ${state.studio.aspectRatio === '16:9' ? 'selected' : ''}>16:9 แนวนอน</option>
+                    <option value="9:16" ${state.studio.aspectRatio === '9:16' ? 'selected' : ''}>9:16 แนวตั้ง (Shorts/Reels)</option>
+                    <option value="1:1" ${state.studio.aspectRatio === '1:1' ? 'selected' : ''}>1:1 จัตุรัส</option>
+                    <option value="21:9" ${state.studio.aspectRatio === '21:9' ? 'selected' : ''}>21:9 Cinema</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label class="text-[11px] text-[#57606a] dark:text-[#b3b3b3] block mb-1 font-medium">Duration</label>
+                  <select onchange="updateStudioDuration(this.value)" class="w-full spotify-input rounded-lg p-2 text-xs">
+                    <option value="5s" ${state.studio.duration === '5s' ? 'selected' : ''}>5 วินาที (75 Coins)</option>
+                    <option value="10s" ${state.studio.duration === '10s' ? 'selected' : ''}>10 วินาที (140 Coins)</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label class="text-[11px] text-[#57606a] dark:text-[#b3b3b3] block mb-1 font-medium">Camera Motion</label>
+                  <select class="w-full spotify-input rounded-lg p-2 text-xs">
+                    <option>Orbit 360° (หมุนรอบ)</option>
+                    <option>Zoom In (ซูมเข้า)</option>
+                    <option>Pan Left/Right (แพน)</option>
+                    <option>Static (ภาพนิ่ง)</option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- Generate Action Box -->
+              <div class="bg-[#f8f9fa] dark:bg-[#121212] border border-[#e1e4e8] dark:border-[#242424] p-4 rounded-xl flex flex-col sm:flex-row items-center justify-between gap-4 mt-4 shadow-sm">
+                <div>
+                  <div class="text-xs text-[#57606a] dark:text-[#b3b3b3] font-medium">Generation Cost</div>
+                  <div class="text-base font-bold text-[#1db954] dark:text-[#1ed760]">🪙 ${state.studio.cost} Coins <span class="text-[10px] text-[#57606a] dark:text-[#b3b3b3] font-normal">(Auto-Refund on Error)</span></div>
+                </div>
+
+                <div class="flex gap-2 w-full sm:w-auto">
+                  ${state.isGenerating ? `
+                    <div class="w-full sm:w-64 space-y-1.5">
+                      <div class="flex justify-between text-[11px] text-[#1db954] dark:text-[#1ed760] font-bold">
+                        <span class="animate-pulse">GENERATING INNGEST QUEUE...</span>
+                        <span>${state.generationProgress}%</span>
+                      </div>
+                      <div class="w-full bg-[#e1e4e8] dark:bg-[#282828] h-1.5 rounded-full overflow-hidden">
+                        <div class="bg-[#1ed760] h-full transition-all duration-300" style="width: ${state.generationProgress}%"></div>
+                      </div>
+                    </div>
+                  ` : `
+                    <button onclick="startVideoGeneration(false)" class="flex-1 sm:flex-none bg-[#1ed760] hover:scale-105 active:scale-95 text-black font-bold px-7 py-3 rounded-full-pill text-xs spotify-btn-label transition shadow-md shadow-[#1ed760]/20">
+                      GENERATE VIDEO
+                    </button>
+                    <button onclick="startVideoGeneration(true)" class="bg-white dark:bg-[#1f1f1f] hover:bg-slate-50 dark:hover:bg-[#282828] text-[#57606a] dark:text-[#b3b3b3] hover:text-[#e36209] border border-[#d0d7de] dark:border-[#3e3e3e] px-3.5 py-3 rounded-full-pill text-xs font-bold transition shadow-sm" title="ทดสอบกรณี Provider Error คืนเงินทันที">
+                      🧪 Test Refund
+                    </button>
+                  `}
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+
+          <!-- RIGHT: Live Video Viewport (5 Cols) -->
+          <div class="lg:col-span-5 space-y-5">
+            
+            <div class="bg-white dark:bg-[#181818] rounded-xl p-6 border border-[#e1e4e8] dark:border-[#242424] shadow-sm space-y-4 transition-colors">
+              <div class="flex justify-between items-center pb-3 border-b border-[#e1e4e8] dark:border-[#242424]">
+                <h3 class="text-sm font-bold text-[#121212] dark:text-white">Live Viewport (4K R2 Stream)</h3>
+                <span class="text-[10px] text-[#1db954] dark:text-[#1ed760] font-mono font-bold bg-emerald-50 dark:bg-emerald-950/40 px-2 py-0.5 rounded-md">Status: READY</span>
+              </div>
+
+              <!-- Main Video Preview Player -->
+              <div class="relative rounded-lg overflow-hidden bg-black aspect-[16/9] border border-[#e1e4e8] dark:border-[#242424] shadow-inner group">
+                <video id="studio-viewport-video" src="${state.generations[state.activeVideoIndex].videoUrl}" class="w-full h-full object-cover" controls playsinline></video>
+              </div>
+
+              <div class="space-y-2">
+                <div class="flex justify-between items-start">
+                  <div>
+                    <h4 class="font-bold text-[#121212] dark:text-white text-sm" id="viewport-video-title">${state.generations[state.activeVideoIndex].title}</h4>
+                    <p class="text-xs text-[#57606a] dark:text-[#b3b3b3] mt-0.5">${state.generations[state.activeVideoIndex].model} • สัดส่วน ${state.generations[state.activeVideoIndex].aspect}</p>
+                  </div>
+                  <span class="text-[10px] text-[#e36209] dark:text-[#ffa42b] bg-amber-50 dark:bg-[#ffa42b]/10 border border-amber-200 dark:border-[#ffa42b]/20 px-2 py-0.5 rounded-minimal font-semibold">
+                    ⏳ 30-Day Expiry
+                  </span>
+                </div>
+
+                <div class="flex gap-2 pt-2">
+                  <a href="${state.generations[state.activeVideoIndex].videoUrl}" download class="flex-1 bg-[#121212] dark:bg-white hover:scale-[1.02] text-white dark:text-black text-xs font-bold py-2.5 rounded-full-pill text-center spotify-btn-label transition shadow-md">
+                    DOWNLOAD MP4
+                  </a>
+                  <button onclick="remixPrompt(${state.activeVideoIndex})" class="bg-[#f0f2f5] dark:bg-[#1f1f1f] hover:bg-[#e9ecef] dark:hover:bg-[#282828] text-[#121212] dark:text-white border border-[#d0d7de] dark:border-[#3e3e3e] text-xs font-bold px-4 py-2.5 rounded-full-pill transition shadow-sm">
+                    Remix
+                  </button>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- Recent Sessions List -->
+            <div class="bg-white dark:bg-[#181818] rounded-xl p-5 border border-[#e1e4e8] dark:border-[#242424] space-y-3 shadow-sm transition-colors">
+              <div class="flex justify-between items-center text-xs font-bold text-[#121212] dark:text-white uppercase tracking-wider">
+                <span>Recent Generations</span>
+                <button onclick="switchPage('videos')" class="text-[#1db954] dark:text-[#1ed760] hover:underline font-bold text-[11px]">View all →</button>
+              </div>
+              <div class="space-y-2">
+                ${state.generations.map((v, i) => `
+                  <div onclick="selectPreviewVideo(${i})" class="flex items-center justify-between p-2.5 rounded-lg ${state.activeVideoIndex === i ? 'bg-[#f0f2f5] dark:bg-[#202020] border-[#1db954] dark:border-[#1ed760]' : 'bg-[#f8f9fa] dark:bg-[#121212] border-[#e1e4e8] dark:border-[#242424]'} border hover:border-[#1db954] cursor-pointer transition shadow-sm">
+                    <div class="flex items-center gap-3">
+                      <div class="w-12 h-8 rounded-md bg-black overflow-hidden relative shrink-0">
+                        <video src="${v.videoUrl}" class="w-full h-full object-cover"></video>
+                      </div>
+                      <div>
+                        <div class="text-xs font-bold text-[#121212] dark:text-white truncate max-w-[140px]">${v.title}</div>
+                        <div class="text-[10px] text-[#57606a] dark:text-[#b3b3b3]">${v.model}</div>
+                      </div>
+                    </div>
+                    <span class="text-xs text-[#1db954] dark:text-[#1ed760] font-mono font-bold">🪙 ${v.cost}</span>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+      `;
+    }
+
+    // ==========================================
+    // 2. AI COACH VIEW
+    // ==========================================
+    function renderCoach() {
+      return `
+        <div class="max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-12 gap-6">
+          
+          <!-- Left: Thai Conversation Stream (6 Cols) -->
+          <div class="lg:col-span-6 bg-white dark:bg-[#181818] rounded-xl p-6 border border-[#e1e4e8] dark:border-[#242424] flex flex-col h-[700px] shadow-sm transition-colors">
+            <div class="flex items-center justify-between pb-3 border-b border-[#e1e4e8] dark:border-[#242424] mb-3">
+              <div class="flex items-center gap-2.5">
+                <div class="w-8 h-8 rounded-full bg-[#1ed760] text-black flex items-center justify-center font-bold text-sm shadow-sm">✨</div>
+                <div>
+                  <h3 class="text-sm font-bold text-[#121212] dark:text-white">AI Coach (ผู้ช่วยกำกับ Prompt)</h3>
+                  <div class="text-[10px] text-[#1db954] dark:text-[#1ed760] font-bold">ถาม-ตอบและปรับแก้ไอเดียฟรี</div>
+                </div>
+              </div>
+              <button onclick="clearCoachChat()" class="text-xs text-[#57606a] dark:text-[#b3b3b3] hover:text-black dark:hover:text-white">ล้างแชท</button>
+            </div>
+
+            <!-- Chat Stream -->
+            <div id="coach-thread" class="flex-1 overflow-y-auto space-y-3 pr-2">
+              ${state.coachMessages.map(m => `
+                <div class="flex ${m.sender === 'user' ? 'justify-end' : 'justify-start'}">
+                  <div class="max-w-[85%] rounded-xl px-4 py-3 text-xs ${m.sender === 'user' ? 'bg-[#1ed760] text-black font-semibold shadow-sm' : 'bg-[#f0f2f5] dark:bg-[#1f1f1f] border border-[#e1e4e8] dark:border-[#242424] text-[#121212] dark:text-white leading-relaxed shadow-sm'}">
+                    ${m.text}
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+
+            <!-- Input -->
+            <div class="pt-3 flex gap-2 border-t border-[#e1e4e8] dark:border-[#242424] mt-2">
+              <input id="coach-input" type="text" placeholder="บอกไอเดียคลิปภาษาไทย (เช่น อยากได้คลิปขายกาแฟสโลว์บาร์ สไตล์มินิมอล)..." 
+                class="flex-1 spotify-input rounded-lg px-4 py-2.5 text-xs placeholder-[#57606a] dark:placeholder-[#b3b3b3]"
+                onkeydown="if(event.key==='Enter') sendCoachMessage()"
+              >
+              <button onclick="sendCoachMessage()" class="bg-[#1ed760] hover:scale-105 text-black font-bold px-5 py-2.5 rounded-full-pill text-xs spotify-btn-label transition shadow-md">
+                ส่ง
+              </button>
+            </div>
+          </div>
+
+          <!-- Right: Prompt Inspector (6 Cols) -->
+          <div class="lg:col-span-6 bg-white dark:bg-[#181818] rounded-xl p-6 border border-[#e1e4e8] dark:border-[#242424] flex flex-col justify-between h-[700px] shadow-sm transition-colors">
+            <div class="space-y-4">
+              <div class="flex justify-between items-center pb-3 border-b border-[#e1e4e8] dark:border-[#242424]">
+                <h3 class="text-xs font-bold text-[#57606a] dark:text-[#b3b3b3] uppercase tracking-wider">Cinematic Prompt Inspector</h3>
+                <span class="text-[10px] text-[#1db954] dark:text-[#1ed760] font-mono font-bold bg-emerald-50 dark:bg-emerald-950/40 px-2 py-0.5 rounded-md">Claude 3.5 Sonnet</span>
+              </div>
+
+              ${state.currentGeneratedPrompt ? `
+                <div class="space-y-3">
+                  <div class="bg-[#f8f9fa] dark:bg-[#121212] p-4 rounded-xl border border-emerald-300 dark:border-[#1ed760]/50 space-y-2 shadow-sm">
+                    <div class="flex justify-between text-xs font-bold">
+                      <span class="text-[#1db954] dark:text-[#1ed760]">FINAL PRODUCTION PROMPT</span>
+                      <span class="text-[#121212] dark:text-white font-mono">🪙 หัก 5 Coins</span>
+                    </div>
+                    <div class="text-xs font-mono text-[#121212] dark:text-white leading-relaxed bg-white dark:bg-[#181818] p-3.5 rounded-lg border border-[#e1e4e8] dark:border-[#242424] shadow-inner">
+                      ${state.currentGeneratedPrompt}
+                    </div>
+                  </div>
+
+                  <!-- Tags -->
+                  <div class="grid grid-cols-3 gap-2 text-[10px]">
+                    <div class="bg-[#f8f9fa] dark:bg-[#121212] p-2.5 rounded-lg border border-[#e1e4e8] dark:border-[#242424]">
+                      <span class="text-[#57606a] dark:text-[#b3b3b3] block font-medium">Camera:</span>
+                      <span class="text-[#121212] dark:text-white font-bold">Macro Orbit 360</span>
+                    </div>
+                    <div class="bg-[#f8f9fa] dark:bg-[#121212] p-2.5 rounded-lg border border-[#e1e4e8] dark:border-[#242424]">
+                      <span class="text-[#57606a] dark:text-[#b3b3b3] block font-medium">Lighting:</span>
+                      <span class="text-[#121212] dark:text-white font-bold">Warm Golden Hour</span>
+                    </div>
+                    <div class="bg-[#f8f9fa] dark:bg-[#121212] p-2.5 rounded-lg border border-[#e1e4e8] dark:border-[#242424]">
+                      <span class="text-[#57606a] dark:text-[#b3b3b3] block font-medium">Frame Rate:</span>
+                      <span class="text-[#121212] dark:text-white font-bold">Slow-Mo 60 FPS</span>
+                    </div>
+                  </div>
+                </div>
+              ` : `
+                <div class="bg-[#f8f9fa] dark:bg-[#121212] border border-dashed border-[#d0d7de] dark:border-[#242424] rounded-xl p-12 text-center text-[#57606a] dark:text-[#b3b3b3] space-y-2 my-auto">
+                  <div class="text-4xl">✨</div>
+                  <div class="text-sm font-bold text-[#121212] dark:text-white">ยังไม่มี Final Prompt</div>
+                  <p class="text-xs text-[#57606a] dark:text-[#b3b3b3] max-w-xs mx-auto">คุยและบรีฟไอเดียกับโค้ชทางซ้าย เมื่อได้แนวคิดที่ต้องการแล้วกดปุ่ม "สรุป Final Prompt" ด้านล่าง</p>
+                </div>
+              `}
+            </div>
+
+            <!-- Export Buttons -->
+            <div class="space-y-3 pt-4 border-t border-[#e1e4e8] dark:border-[#242424]">
+              <div class="flex gap-2">
+                <button onclick="generateFinalPrompt()" class="flex-1 bg-[#1ed760] hover:scale-[1.02] text-black font-bold py-3.5 rounded-full-pill text-xs spotify-btn-label transition shadow-md shadow-[#1ed760]/20">
+                  ✨ สรุป FINAL PROMPT (5 COINS)
+                </button>
+                <button onclick="generateStoryboard()" class="bg-[#f0f2f5] dark:bg-[#1f1f1f] hover:bg-[#e9ecef] dark:hover:bg-[#282828] text-[#121212] dark:text-white border border-[#d0d7de] dark:border-[#3e3e3e] text-xs font-bold px-4 py-3.5 rounded-full-pill transition shadow-sm">
+                  📋 Storyboard 6 ช็อต (15 Coins)
+                </button>
+              </div>
+
+              ${state.currentGeneratedPrompt ? `
+                <button onclick="sendPromptToStudio()" class="w-full bg-[#121212] dark:bg-white hover:scale-[1.02] text-white dark:text-black font-bold py-3 rounded-full-pill text-xs spotify-btn-label transition flex items-center justify-center gap-2 shadow-md">
+                  <span>🎬 SEND TO VIDEO STUDIO</span>
+                  <span>→</span>
+                </button>
+              ` : ''}
+            </div>
+
+          </div>
+
+        </div>
+      `;
+    }
+
+    // ==========================================
+    // 3. LEARN ACADEMY VIEW
+    // ==========================================
+    function renderLearn() {
+      return `
+        <div class="max-w-7xl mx-auto w-full space-y-6">
+          <div class="flex justify-between items-center">
+            <div>
+              <h1 class="text-2xl font-bold text-[#121212] dark:text-white">🎓 AI Video Academy</h1>
+              <p class="text-xs text-[#57606a] dark:text-[#b3b3b3] mt-1">คอร์สเรียน AI Video ระดับมืออาชีพ พร้อมสตรีม HLS Adaptive Bitrate คมชัดทุกอุปกรณ์</p>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            ${state.courses.map(course => `
+              <div class="bg-white dark:bg-[#181818] border ${course.purchased ? 'border-emerald-300 dark:border-[#1ed760]/40' : 'border-[#e1e4e8] dark:border-[#242424]'} rounded-xl p-6 space-y-4 relative hover:shadow-md transition duration-200 shadow-sm">
+                ${course.purchased ? '<span class="absolute top-4 right-4 bg-emerald-50 dark:bg-[#1ed760]/20 text-[#1db954] dark:text-[#1ed760] border border-emerald-200 dark:border-[#1ed760]/30 text-[10px] font-bold px-2.5 py-1 rounded-full-pill uppercase">Purchased</span>' : ''}
+                
+                <div class="text-4xl">${course.thumbnail}</div>
+                <div>
+                  <h3 class="text-lg font-bold text-[#121212] dark:text-white">${course.title}</h3>
+                  <div class="flex items-center gap-4 text-xs text-[#57606a] dark:text-[#b3b3b3] mt-1">
+                    <span>⏱️ ${course.duration}</span>
+                    <span>📚 ${course.lessonsCount} บทเรียน</span>
+                    <span class="text-[#1db954] dark:text-[#1ed760] font-bold">+${course.bonusCoins} Bonus Coins</span>
+                  </div>
+                </div>
+
+                ${course.purchased ? `
+                  <div class="space-y-2 pt-3 border-t border-[#e1e4e8] dark:border-[#242424]">
+                    <div class="flex justify-between text-xs text-[#57606a] dark:text-[#b3b3b3]">
+                      <span>ความคืบหน้าการเรียน</span>
+                      <span class="text-[#1db954] dark:text-[#1ed760] font-bold font-mono">${course.progressPercent}%</span>
+                    </div>
+                    <div class="w-full bg-[#f0f2f5] dark:bg-[#121212] h-1.5 rounded-full overflow-hidden">
+                      <div class="bg-[#1ed760] h-full" style="width: ${course.progressPercent}%"></div>
+                    </div>
+                    <button class="w-full mt-3 bg-[#1ed760] hover:scale-[1.02] text-black font-bold py-2.5 rounded-full-pill text-xs spotify-btn-label transition shadow-md">
+                      RESUME LESSON
+                    </button>
+                  </div>
+                ` : `
+                  <div class="pt-4 border-t border-[#e1e4e8] dark:border-[#242424] flex items-center justify-between">
+                    <div>
+                      <div class="text-xs text-[#57606a] dark:text-[#b3b3b3]">ราคาคอร์ส</div>
+                      <div class="text-xl font-bold text-[#121212] dark:text-white">฿${course.priceTHB} บาท</div>
+                    </div>
+                    <button onclick="buyCourse('${course.id}')" class="bg-[#1ed760] hover:scale-105 text-black font-bold px-6 py-2.5 rounded-full-pill text-xs spotify-btn-label transition shadow-md shadow-[#1ed760]/20">
+                      ENROLL (GET 🪙 ${course.bonusCoins})
+                    </button>
+                  </div>
+                `}
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      `;
+    }
+
+    // ==========================================
+    // 4. MY VIDEOS VIEW
+    // ==========================================
+    function renderVideos() {
+      return `
+        <div class="max-w-7xl mx-auto w-full space-y-6">
+          <div class="flex justify-between items-center">
+            <div>
+              <h1 class="text-2xl font-bold text-[#121212] dark:text-white">📁 My Video Library</h1>
+              <p class="text-xs text-[#57606a] dark:text-[#b3b3b3] mt-1">ไฟล์วิดีโอจะถูกเก็บรักษาไว้ 30 วันบน Cloudflare R2 (ADR-0008)</p>
+            </div>
+            <span class="text-xs bg-white dark:bg-[#181818] border border-[#e1e4e8] dark:border-[#242424] px-3.5 py-1.5 rounded-full-pill text-[#121212] dark:text-white font-mono shadow-sm">
+              TOTAL: ${state.generations.length} ASSETS
+            </span>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+            ${state.generations.map((v, i) => `
+              <div class="bg-white dark:bg-[#181818] border border-[#e1e4e8] dark:border-[#242424] hover:shadow-md rounded-xl p-4 space-y-3 transition duration-200 shadow-sm">
+                <div class="relative rounded-lg overflow-hidden bg-black aspect-[16/9] shadow-inner">
+                  <video src="${v.videoUrl}" class="w-full h-full object-cover" controls playsinline></video>
+                  <span class="absolute top-2 right-2 bg-black/80 text-[#1ed760] text-[10px] font-bold px-2 py-0.5 rounded-md">
+                    🪙 ${v.cost} Coins
+                  </span>
+                </div>
+                <div>
+                  <h3 class="font-bold text-sm text-[#121212] dark:text-white truncate">${v.title}</h3>
+                  <div class="text-[11px] text-[#57606a] dark:text-[#b3b3b3] flex justify-between mt-1 font-medium">
+                    <span>${v.model}</span>
+                    <span class="text-[#e36209] dark:text-[#ffa42b] font-semibold">⏳ เหลืออีก ${v.expiresInDays} วัน</span>
+                  </div>
+                </div>
+                <div class="flex gap-2 pt-1">
+                  <a href="${v.videoUrl}" download class="flex-1 bg-[#121212] dark:bg-white hover:scale-[1.02] text-white dark:text-black text-xs font-bold py-2 rounded-full-pill text-center spotify-btn-label transition shadow-sm">
+                    DOWNLOAD
+                  </a>
+                  <button onclick="remixPrompt(${i})" class="bg-[#f0f2f5] dark:bg-[#1f1f1f] hover:bg-[#e9ecef] dark:hover:bg-[#282828] text-[#121212] dark:text-white border border-[#d0d7de] dark:border-[#3e3e3e] text-xs font-bold px-3 py-2 rounded-full-pill transition shadow-sm">
+                    Remix
+                  </button>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      `;
+    }
+
+    // ==========================================
+    // ACTIONS & BUSINESS LOGIC
+    // ==========================================
+    function updateStudioModel(val) { state.studio.model = val; }
+    function updateStudioAspect(val) { state.studio.aspectRatio = val; }
+    function updateStudioDuration(val) {
+      state.studio.duration = val;
+      state.studio.cost = val === '10s' ? 140 : 75;
+      render();
+    }
+
+    function selectPresetPrompt(idx) {
+      if (idx === 0) {
+        state.studio.prompt = 'A cinematic Thai luxury seafood commercial, fresh tiger prawns glistening on crushed ice, macro slow motion camera orbit, 4k ultra-detailed, warm golden ambient lighting, professional food photography.';
+      } else if (idx === 1) {
+        state.studio.prompt = 'Bangkok Chinatown neon night market, rain reflections on wet asphalt, cybernetic tuktuk cruising in slow motion, cinematic teal and orange lighting, ultra-realistic 4k.';
+      } else {
+        state.studio.prompt = 'Artisan barista pouring latte art, specialty coffee steam rising in sunbeam, macro 60fps slow motion, rich dark coffee tones, warm cozy cafe atmosphere.';
+      }
+      state.currentPage = 'studio';
+      showToast('🎬 โหลด Preset Prompt ลงใน Studio เรียบร้อย', 'info');
+      render();
+    }
+
+    function selectPreviewVideo(idx) {
+      state.activeVideoIndex = idx;
+      const v = state.generations[idx];
+      
+      const media = document.getElementById('global-player-media');
+      media.src = v.videoUrl;
+      
+      const vid = document.getElementById('studio-viewport-video');
+      if (vid) vid.src = v.videoUrl;
+      
+      renderFooter();
+      showToast(`📺 โหลดวิดีโอ "${v.title}" บนเครื่องเล่นแล้ว`, 'info');
+    }
+
+    function remixPrompt(idx) {
+      const v = state.generations[idx];
+      state.studio.prompt = `Remix of ${v.title}: cinematic volumetric lighting, 4k ultra-detailed, photorealistic --ar 16:9`;
+      state.currentPage = 'studio';
+      showToast('🔄 คัดลอกแนวคิดลงใน Studio Workspace เรียบร้อย', 'info');
+      render();
+    }
+
+    // Modal Handlers
+    function openTopupModal() {
+      document.getElementById('topup-modal').classList.remove('hidden');
+      document.getElementById('topup-step-1').classList.remove('hidden');
+      document.getElementById('topup-step-2').classList.add('hidden');
+    }
+
+    function closeTopupModal() {
+      document.getElementById('topup-modal').classList.add('hidden');
+    }
+
+    function selectPackage(coins, price) {
+      state.selectedPackage = { coins, price };
+      document.getElementById('selected-price').textContent = `฿${price} บาท`;
+    }
+
+    function proceedToPayment() {
+      document.getElementById('topup-step-1').classList.add('hidden');
+      document.getElementById('topup-step-2').classList.remove('hidden');
+      document.getElementById('qr-amount-text').textContent = `฿${state.selectedPackage.price}.00`;
+    }
+
+    function backToStep1() {
+      document.getElementById('topup-step-2').classList.add('hidden');
+      document.getElementById('topup-step-1').classList.remove('hidden');
+    }
+
+    function simulateSlipVerification(type) {
+      if (type === 'duplicate') {
+        showToast('❌ ตรวจพบสลิปซ้ำ! ระบบปฏิเสธและแจ้งเตือนแอดมินตาม ADR-0011', 'error');
+        return;
+      }
+      const newRef = 'SLIP_' + Math.floor(Math.random() * 900000 + 100000);
+      state.usedSlipRefs.add(newRef);
+      state.user.coinBalance += state.selectedPackage.coins;
+      state.transactions.unshift({
+        id: 'tx_' + Date.now().toString().slice(-4),
+        type: 'TOPUP',
+        amount: state.selectedPackage.coins,
+        detail: `SlipOK Verified: Ref #${newRef} (฿${state.selectedPackage.price})`,
+        date: new Date().toISOString().split('T')[0]
+      });
+      closeTopupModal();
+      showToast(`🎉 ยืนยันสลิปสำเร็จ! เติม +${state.selectedPackage.coins} Coins เรียบร้อยแล้ว`, 'success');
+      render();
+    }
+
+    // Coach handlers
+    function sendCoachMessage() {
+      const input = document.getElementById('coach-input');
+      const text = input.value.trim();
+      if (!text) return;
+      state.coachMessages.push({ sender: 'user', text });
+      input.value = '';
+      render();
+
+      setTimeout(() => {
+        state.coachMessages.push({
+          sender: 'coach',
+          text: `ยอดเยี่ยมครับสำหรับไอเดีย "${text}"! แนะนำให้ใช้การเคลื่อนกล้องแบบ Orbit 360° หมุนรอบวัตถุ พร้อมแสง Golden Hour Warm Lighting เพื่อให้ดูพรีเมียมระดับโฆษณาทีวีครับ เมื่อพร้อมแล้วสามารถกดปุ่ม "สรุป Final Prompt" ด้านขวาได้เลย!`
+        });
+        render();
+        const thread = document.getElementById('coach-thread');
+        if (thread) thread.scrollTop = thread.scrollHeight;
+      }, 600);
+    }
+
+    function clearCoachChat() {
+      state.coachMessages = [{ sender: 'coach', text: 'สวัสดีครับ! ผมคือ AI Coach ผู้ช่วยคิดและกำกับ Prompt สำหรับ AI Video สไตล์ภาพยนตร์ วันนี้ต้องการสร้างสรรค์ผลงานแนวไหนครับ?' }];
+      state.currentGeneratedPrompt = null;
+      render();
+    }
+
+    function generateFinalPrompt() {
+      if (state.user.coinBalance < 5) {
+        showToast('🪙 Coin ไม่พอ (ต้องการ 5 Coins)', 'error');
+        openTopupModal();
+        return;
+      }
+      state.user.coinBalance -= 5;
+      state.transactions.unshift({
+        id: 'tx_' + Date.now().toString().slice(-4),
+        type: 'SPEND',
+        amount: -5,
+        detail: 'AI Coach: Final Prompt Export',
+        date: new Date().toISOString().split('T')[0]
+      });
+      state.currentGeneratedPrompt = "A cinematic Thai luxury commercial, fresh tiger prawns glistening on crushed ice, 4k ultra-detailed, macro 360-degree slow motion camera orbit, warm golden ambient lighting, professional food photography --ar 16:9 --v 6.1";
+      showToast('✨ AI Coach สร้าง Final Prompt สำเร็จ (-5 Coins)', 'success');
+      render();
+    }
+
+    function generateStoryboard() {
+      if (state.user.coinBalance < 15) {
+        showToast('🪙 Coin ไม่พอ (ต้องการ 15 Coins)', 'error');
+        openTopupModal();
+        return;
+      }
+      state.user.coinBalance -= 15;
+      state.transactions.unshift({
+        id: 'tx_' + Date.now().toString().slice(-4),
+        type: 'SPEND',
+        amount: -15,
+        detail: 'AI Coach: 6-Shot Storyboard Pack',
+        date: new Date().toISOString().split('T')[0]
+      });
+      showToast('📋 สร้าง Storyboard 6 ช็อตเรียบร้อย (-15 Coins)', 'success');
+      render();
+    }
+
+    function sendPromptToStudio() {
+      if (state.currentGeneratedPrompt) {
+        state.studio.prompt = state.currentGeneratedPrompt;
+        state.currentPage = 'studio';
+        showToast('🎬 ส่ง Prompt เข้า Video Studio เรียบร้อยแล้ว!', 'info');
+        render();
+      }
+    }
+
+    function startVideoGeneration(simulateFail = false) {
+      const cost = state.studio.cost;
+      if (state.user.coinBalance < cost) {
+        showToast(`🪙 เหรียญไม่พอ (ต้องการ ${cost} Coins)`, 'error');
+        openTopupModal();
+        return;
+      }
+
+      state.user.coinBalance -= cost;
+      const txId = 'tx_' + Date.now().toString().slice(-4);
+      state.transactions.unshift({
+        id: txId,
+        type: 'SPEND',
+        amount: -cost,
+        detail: `Video Studio: ${state.studio.model} Gen`,
+        date: new Date().toISOString().split('T')[0]
+      });
+
+      state.isGenerating = true;
+      state.generationProgress = 15;
+      render();
+
+      let progressInterval = setInterval(() => {
+        state.generationProgress += 30;
+        if (state.generationProgress >= 100) {
+          clearInterval(progressInterval);
+          state.isGenerating = false;
+
+          if (simulateFail) {
+            state.user.coinBalance += cost;
+            state.transactions.unshift({
+              id: 'tx_ref_' + Date.now().toString().slice(-4),
+              type: 'REFUND',
+              amount: cost,
+              detail: `AUTO-REFUND: Provider Timeout for ${txId}`,
+              date: new Date().toISOString().split('T')[0]
+            });
+            showToast(`⚠️ Provider ขัดข้อง! ระบบ AUTO-REFUND คืน +${cost} Coins เข้า Wallet แล้ว`, 'error');
+          } else {
+            state.generations.unshift({
+              id: 'gen_' + Date.now().toString().slice(-4),
+              title: 'Thai Commercial Shot #' + (state.generations.length + 1),
+              model: state.studio.model,
+              aspect: state.studio.aspectRatio,
+              cost: cost,
+              createdAt: new Date().toISOString(),
+              expiresInDays: 30,
+              videoUrl: 'https://assets.mixkit.co/videos/preview/mixkit-fresh-seafood-dish-in-a-restaurant-41481-large.mp4'
+            });
+            state.activeVideoIndex = 0;
+            showToast('🎉 วิดีโอสร้างเสร็จสมบูรณ์และจัดเก็บลง R2 เรียบร้อย!', 'success');
+          }
+          render();
+        } else {
+          render();
+        }
+      }, 400);
+    }
+
+    function buyCourse(courseId) {
+      const course = state.courses.find(c => c.id === courseId);
+      if (!course) return;
+      course.purchased = true;
+      state.user.coinBalance += course.bonusCoins;
+      state.transactions.unshift({
+        id: 'tx_crs_' + Date.now().toString().slice(-4),
+        type: 'COURSE_BONUS',
+        amount: course.bonusCoins,
+        detail: `Bonus Coins: ${course.title}`,
+        date: new Date().toISOString().split('T')[0]
+      });
+      showToast(`🎓 สมัครคอร์สสำเร็จ! ปลดล็อกบทเรียน + รับ Bonus +${course.bonusCoins} Coins แล้ว`, 'success');
+      render();
+    }
+
+    // ==========================================
+    // PERSISTENT FOOTER MEDIA PLAYBACK & SCRUBBER
+    // ==========================================
+    const globalMedia = document.getElementById('global-player-media');
+    
+    function toggleFooterPlay() {
+      if (!globalMedia.src) {
+        globalMedia.src = state.generations[state.activeVideoIndex].videoUrl;
+      }
+      if (globalMedia.paused) {
+        globalMedia.play();
+        state.isPlaying = true;
+      } else {
+        globalMedia.pause();
+        state.isPlaying = false;
+      }
+      const btn = document.getElementById('footer-play-btn');
+      if (btn) btn.textContent = state.isPlaying ? '⏸' : '▶';
+    }
+
+    function rewindPreview() {
+      globalMedia.currentTime = Math.max(0, globalMedia.currentTime - 2);
+    }
+
+    function forwardPreview() {
+      globalMedia.currentTime = Math.min(globalMedia.duration || 5, globalMedia.currentTime + 2);
+    }
+
+    function seekPreview(e) {
+      const rect = e.currentTarget.getBoundingClientRect();
+      const pct = (e.clientX - rect.left) / rect.width;
+      if (globalMedia.duration) {
+        globalMedia.currentTime = globalMedia.duration * pct;
+      }
+    }
+
+    function formatTime(sec) {
+      if (isNaN(sec)) return '0:00';
+      const m = Math.floor(sec / 60);
+      const s = Math.floor(sec % 60);
+      return `${m}:${s < 10 ? '0' : ''}${s}`;
+    }
+
+    globalMedia.addEventListener('timeupdate', () => {
+      const cur = document.getElementById('video-time-cur');
+      const total = document.getElementById('video-time-total');
+      const bar = document.getElementById('video-scrubber-progress');
+      if (cur) cur.textContent = formatTime(globalMedia.currentTime);
+      if (total && globalMedia.duration) total.textContent = formatTime(globalMedia.duration);
+      if (bar && globalMedia.duration) {
+        const pct = (globalMedia.currentTime / globalMedia.duration) * 100;
+        bar.style.width = pct + '%';
+      }
+    });
+
+    globalMedia.addEventListener('ended', () => {
+      state.isPlaying = false;
+      const btn = document.getElementById('footer-play-btn');
+      if (btn) btn.textContent = '▶';
+    });
+
+    // Initial render
+    globalMedia.src = state.generations[0].videoUrl;
+    render();
+  </script>
+</body>
+</html>

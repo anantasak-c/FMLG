@@ -1,0 +1,21 @@
+# Local environment secrets
+.env*
+!.env.example
+
+# Next.js build output
+.next/
+
+# TypeScript build metadata
+*.tsbuildinfo
+
+.vercel
+
+node_modules/
+.next/
+dist/
+build/
+.cache/
+*.log
+__pycache__/
+venv/
+.venv/

@@ -1,0 +1,14 @@
+{
+  "knowledgeBaseVersion": "2026-08-21",
+  "source": "video-prompt-knowledge-base.md",
+  "sections": [
+    { "id": "principles", "heading": "ลายเซ็นวิธีคิดของผู้สร้าง", "tags": ["core", "experience", "culture", "timeline", "continuity", "negative-prompt"] },
+    { "id": "workflow", "heading": "ลำดับคิดก่อนเขียน prompt", "tags": ["core", "brief", "timeline", "physical-causality"] },
+    { "id": "template", "heading": "โครง prompt มาตรฐาน", "tags": ["core", "compiler", "prompt-structure"] },
+    { "id": "beats", "heading": "กฎการเขียน beat", "tags": ["timeline", "action", "dialogue", "continuity"] },
+    { "id": "grill", "heading": "ระบบถามแบบ Grill สำหรับ AI ผู้ช่วย", "tags": ["adaptive-grill", "brief", "ambiguity"] },
+    { "id": "outputs", "heading": "Output ที่ AI ควรส่งมอบ", "tags": ["compiler", "negative-prompt", "checklist", "assumptions"] },
+    { "id": "quality-gate", "heading": "Quality gate ก่อนส่ง Final Prompt", "tags": ["quality-gate", "validation"] },
+    { "id": "format-exceptions", "heading": "ข้อยกเว้นตามรูปแบบงาน", "tags": ["recovered-news", "fantasy-action", "multi-clip", "educational"] }
+  ]
+}
